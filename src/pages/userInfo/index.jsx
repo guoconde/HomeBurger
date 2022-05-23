@@ -8,12 +8,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import useCart from '../../hooks/cartHook';
+import { sendOrder } from '../../services/ordersServices';
 import Header from '../header';
 
 export default function UserInfo() {
+  const { cart, newCart } = useCart();
+  const navigate = useNavigate();
   const [info, setInfo] = useState();
 
   const {
@@ -23,12 +27,49 @@ export default function UserInfo() {
     formState: { errors },
   } = useForm();
 
-  function handleAdress(data) {
-    setInfo(data);
+  // function handleAdress(data) {
+  //   setInfo(data);
+  // }
+
+  async function handleOrder(data) {
+    navigate('/info');
+    const order = await cart.map((el) => {
+      let orderMessage = '';
+      const message = `${el.quantity} ${el.name}`;
+
+      orderMessage += message;
+
+      return orderMessage;
+    });
+
+    let message = `
+      Olá, gostaria de fazer o pedido:
+      ${order.join(', ')}
+      Nome: ${data.name}
+      Endereço: ${data.adress}
+      Pagamento: ${data.payment}
+    `;
+
+    console.log(message);
+    message = encodeURIComponent(message);
+    const number = process.env.REACT_APP_NUMBER;
+
+    const whatsapp = `http://wa.me/${number}?text=${message}`;
+    // window.open(whatsapp, '_blank');
+
+    // await sendOrder({ ...data, item: cart });
   }
 
-  console.log(info);
-  const onSubmit = (data) => handleAdress(data);
+  const onSubmit = (data) => handleOrder(data);
+
+  function handleCancel() {
+    const cancel = window.confirm('Você realmente deseja cancelar o pedido?');
+
+    if (!cancel) return;
+
+    newCart();
+    navigate('/home');
+  }
 
   return (
     <>
@@ -83,7 +124,7 @@ export default function UserInfo() {
                 {...register('adress')}
               />
               <Select
-                {...register('type')}
+                {...register('payment')}
                 label='Tipo'
                 defaultValue='dinheiro'
                 sx={{ width: '235px' }}
@@ -95,18 +136,32 @@ export default function UserInfo() {
               </Select>
             </Box>
           </Container>
-          <Button
-            type='submit'
+          <Box
             sx={{
+              width: '100%',
               display: 'flex',
-              gap: 0.5,
-              alignItems: 'center',
-              color: 'black',
+              gap: 1,
+              marginTop: '10px',
             }}
           >
-            <ThumbUpAltIcon fontSize='large' color='success' />
-            <Typography fontWeight='bold'>Atualizar</Typography>
-          </Button>
+            <Button
+              type='submit'
+              onClick={() => handleOrder()}
+              sx={{ width: '100%' }}
+              variant='contained'
+              color='success'
+            >
+              pedir
+            </Button>
+            <Button
+              onClick={() => handleCancel()}
+              sx={{ width: '100%' }}
+              variant='contained'
+              color='error'
+            >
+              Cancelar
+            </Button>
+          </Box>
         </Paper>
       </Container>
     </>

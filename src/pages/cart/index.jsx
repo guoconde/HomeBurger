@@ -31,26 +31,7 @@ export default function Cart() {
   }, []);
 
   function handleOrder() {
-    const order = cart.map((el) => {
-      let orderMessage = '';
-      const message = `${el.quantity} ${el.name}`;
-
-      orderMessage += message;
-
-      return orderMessage;
-    });
-
-    let message = `
-      Olá, gostaria de fazer o pedido:
-      ${order.join(', ')}
-    `;
-
-    console.log(message);
-    message = encodeURIComponent(message);
-    const number = process.env.REACT_APP_NUMBER;
-
-    const whatsapp = `http://wa.me/${number}?text=${message}`;
-    // window.open(whatsapp, '_blank');
+    navigate('/info');
   }
 
   function handleCancel() {
@@ -123,7 +104,7 @@ export default function Cart() {
             variant='contained'
             color='success'
           >
-            Pedir
+            próximo
           </Button>
           <Button
             onClick={() => handleCancel()}
