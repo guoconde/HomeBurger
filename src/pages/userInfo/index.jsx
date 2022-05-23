@@ -31,8 +31,16 @@ export default function UserInfo() {
   //   setInfo(data);
   // }
 
+  function handleCancel() {
+    const cancel = window.confirm('Você realmente deseja cancelar o pedido?');
+
+    if (!cancel) return;
+
+    newCart();
+    navigate('/home');
+  }
+
   async function handleOrder(data) {
-    navigate('/info');
     const order = await cart.map((el) => {
       let orderMessage = '';
       const message = `${el.quantity} ${el.name}`;
@@ -50,7 +58,6 @@ export default function UserInfo() {
       Pagamento: ${data.payment}
     `;
 
-    console.log(message);
     message = encodeURIComponent(message);
     const number = process.env.REACT_APP_NUMBER;
 
@@ -58,18 +65,12 @@ export default function UserInfo() {
     // window.open(whatsapp, '_blank');
 
     // await sendOrder({ ...data, item: cart });
+
+    window.alert('Pedido realizado com sucesso!');
+    handleCancel();
   }
 
   const onSubmit = (data) => handleOrder(data);
-
-  function handleCancel() {
-    const cancel = window.confirm('Você realmente deseja cancelar o pedido?');
-
-    if (!cancel) return;
-
-    newCart();
-    navigate('/home');
-  }
 
   return (
     <>
