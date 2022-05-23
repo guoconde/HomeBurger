@@ -67,7 +67,8 @@ export default function UserInfo() {
     // await sendOrder({ ...data, item: cart });
 
     window.alert('Pedido realizado com sucesso!');
-    handleCancel();
+    newCart();
+    navigate('/home');
   }
 
   const onSubmit = (data) => handleOrder(data);
